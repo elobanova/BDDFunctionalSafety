@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faultTree type="hazard">
+	<gate id="1" level="1" operation="OR">
+		<basic name="G" id="5" level="2" probability="0.1" />
+		<gate id="2" level="2" operation="AND">
+			<basic name="E" id="6" level="3" probability="0.2" />
+			<basic name="F" id="7" level="3" probability="0.2" />
+			<basic name="A" id="8" level="3" probability="0.2" />
+			<gate id="4" level="3" operation="OR">
+				<basic name="B" id="9" level="4" probability="0.2" />
+				<basic name="C" id="10" level="4" probability="0.2" />
+				<basic name="D" id="11" level="4" probability="0.2" />
+			</gate>
+		</gate>
+		<gate id="3" level="2" operation="OR">
+			<basic name="A" id="8" level="3" probability="0.2" />
+			<gate id="4" level="3" operation="OR">
+				<basic name="B" id="9" level="4" probability="0.2" />
+				<basic name="C" id="10" level="4" probability="0.2" />
+				<basic name="D" id="11" level="4" probability="0.2" />
+			</gate>
+		</gate>
+	</gate>
+</faultTree>
