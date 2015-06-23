@@ -1,4 +1,4 @@
-package parser;
+package markov.chains.parser;
 
 import java.io.FileInputStream;
 import java.io.IOException;

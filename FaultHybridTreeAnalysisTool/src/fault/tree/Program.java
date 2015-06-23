@@ -6,13 +6,15 @@ import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import markov.chains.parser.Connection;
+import markov.chains.parser.ConnectionXMLParser;
+import markov.chains.seriescomputation.SeriesComputationUtils;
 import net.sf.javabdd.BDD;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.math3.linear.RealMatrix;
 import org.xml.sax.SAXException;
 
-import parser.Connection;
-import parser.ConnectionXMLParser;
 import fault.tree.model.xml.GateNode;
 import fault.tree.model.xml.parser.FaultTreeXMLParser;
 import faultTreeToBdd.FaultTreeToBdd;
@@ -20,7 +22,7 @@ import faultTreeToBdd.FaultTreeToBdd;
 public class Program {
 	public static void main(String[] args) {
 		File faultTreeInput = FileUtils.toFile(Program.class
-				.getResource("resources/data.xml"));
+				.getResource("resources/data3.xml"));
 		File connectionsOfMarkovChainsInput = FileUtils.toFile(Program.class
 				.getResource("resources/markovchains.xml"));
 		FaultTreeToBdd ftToBDD = new FaultTreeToBdd();
@@ -37,6 +39,10 @@ public class Program {
 			List<Connection> chains = connectionParser
 					.parse(connectionsOfMarkovChainsInput.getAbsolutePath());
 			System.out.println("Parsed markov chains");
+			System.out.println(ftToBDD.getGeneratorMatrixSize());
+			RealMatrix generatorMatrix = SeriesComputationUtils
+					.buildGeneratorMatrix(chains,
+							ftToBDD.getGeneratorMatrixSize());
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

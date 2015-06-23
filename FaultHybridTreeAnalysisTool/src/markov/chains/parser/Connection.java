@@ -1,4 +1,4 @@
-package parser;
+package markov.chains.parser;
 
 public class Connection {
 	private int idFrom;

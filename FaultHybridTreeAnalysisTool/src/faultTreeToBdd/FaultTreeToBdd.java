@@ -1,8 +1,10 @@
 package faultTreeToBdd;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDFactory;
@@ -18,6 +20,8 @@ public class FaultTreeToBdd {
 	private static final int VAR_NUMBER = 1000;
 	private static final int CACHE_SIZE = 1000;
 	private static final int NODE_NUMBER = 1000;
+
+	private Set<Integer> idMap = new HashSet<>();
 	private BDDFactory bddFactory;
 	private HashMap<Integer, BDD> bddMap = new HashMap<Integer, BDD>();
 
@@ -34,6 +38,11 @@ public class FaultTreeToBdd {
 		BDD bdd = null;
 		Integer nodeId = new Integer(node.getId());
 		probabilities.put(nodeId, node.getProbability());
+		if (node instanceof BasicNode) {
+			if (!idMap.contains(nodeId)) {
+				idMap.add(nodeId);
+			}
+		}
 		if (bddMap.containsKey(nodeId)) {
 			bdd = bddMap.get(nodeId);
 		} else if (node instanceof BasicNode) {
@@ -77,5 +86,9 @@ public class FaultTreeToBdd {
 			failureProbability += current;
 		}
 		return failureProbability;
+	}
+	
+	public int getGeneratorMatrixSize() {
+		return idMap.size();
 	}
 }
