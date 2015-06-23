@@ -12,4 +12,12 @@ public enum OperationEnum {
 	public String getName() {
 		return this.name;
 	}
+
+	public static boolean isAND(OperationEnum op) {
+		return AND.getName().equals(op.getName());
+	}
+	
+	public static boolean isOR(OperationEnum op) {
+		return OR.getName().equals(op.getName());
+	}
 }
