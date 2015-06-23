@@ -146,29 +146,11 @@ public class FaultTreeXMLParser {
 				node.setChildEvent(i, n);
 				replace(n, matchedEvents);
 			}
-			
-			if(child instanceof BasicNode) {
+
+			if (child instanceof BasicNode) {
 				continue;
 			}
 		}
-
-		// if (node.getFirstArgument() instanceof GateNode) {
-		// int id = node.getFirstArgument().getId();
-		// GateNode n = findGateById(id, matchedEvents);
-		// node.setFirstArgument(n);
-		// replace(n, matchedEvents);
-		// }
-		// if (node.getSecondArgument() instanceof GateNode) {
-		// int id = node.getSecondArgument().getId();
-		// GateNode n = findGateById(id, matchedEvents);
-		// node.setSecondArgument(n);
-		// replace(n, matchedEvents);
-		// }
-		//
-		// if (node.getFirstArgument() instanceof BasicNode &&
-		// node.getSecondArgument() instanceof BasicNode) {
-		// return;
-		// }
 	}
 
 	private GateNode findGateById(int id, List<GateNode> matchedEvents) {

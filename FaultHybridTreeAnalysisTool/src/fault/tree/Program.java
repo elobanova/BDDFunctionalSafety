@@ -2,6 +2,7 @@ package fault.tree;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -16,14 +17,18 @@ import faultTreeToBdd.FaultTreeToBdd;
 
 public class Program {
 	public static void main(String[] args) {
-		File faultTreeInput = FileUtils.toFile(Program.class.getResource("resources/data.xml"));
+		File faultTreeInput = FileUtils.toFile(Program.class
+				.getResource("resources/data.xml"));
 		FaultTreeToBdd ftToBDD = new FaultTreeToBdd();
 		GateNode faultTree;
 		try {
-			faultTree = new FaultTreeXMLParser().readFaultTree(faultTreeInput.getAbsolutePath());
+			faultTree = new FaultTreeXMLParser().readFaultTree(faultTreeInput
+					.getAbsolutePath());
 			System.out.println("Tree is built.");
 			BDD bdd = ftToBDD.faultTreeToBDD(faultTree);
 			System.out.println("BDD is built");
+			double discreteProbability = ftToBDD.getFailure(bdd);
+			System.out.println("Discrete probability = " + discreteProbability);
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -1,6 +1,8 @@
 package faultTreeToBdd;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import net.sf.javabdd.BDD;
 import net.sf.javabdd.BDDFactory;
@@ -10,6 +12,9 @@ import fault.tree.model.xml.GateNode;
 import fault.tree.model.xml.OperationEnum;
 
 public class FaultTreeToBdd {
+	private static final int FALSE_SAT_VALUE = 0;
+	private static final int TRUE_SAT_VALUE = 1;
+	private Map<Integer, Double> probabilities = new HashMap<>();
 	private static final int VAR_NUMBER = 1000;
 	private static final int CACHE_SIZE = 1000;
 	private static final int NODE_NUMBER = 1000;
@@ -28,6 +33,7 @@ public class FaultTreeToBdd {
 	private BDD buildBdd(EventNode node) {
 		BDD bdd = null;
 		Integer nodeId = new Integer(node.getId());
+		probabilities.put(nodeId, node.getProbability());
 		if (bddMap.containsKey(nodeId)) {
 			bdd = bddMap.get(nodeId);
 		} else if (node instanceof BasicNode) {
@@ -52,5 +58,24 @@ public class FaultTreeToBdd {
 			}
 		}
 		return bdd;
+	}
+
+	public double getFailure(BDD bddTree) {
+		List<?> list = (List<?>) bddTree.allsat();
+		double failureProbability = 0;
+		byte[] solutions;
+		for (Object o : list) {
+			double current = 1.0;
+			solutions = (byte[]) o;
+			for (int i = 0; i < solutions.length; i++) {
+				if (solutions[i] == TRUE_SAT_VALUE) {
+					current *= probabilities.get(i);
+				} else if (solutions[i] == FALSE_SAT_VALUE) {
+					current *= (1 - probabilities.get(i));
+				}
+			}
+			failureProbability += current;
+		}
+		return failureProbability;
 	}
 }
