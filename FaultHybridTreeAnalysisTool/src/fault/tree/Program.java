@@ -11,6 +11,8 @@ import net.sf.javabdd.BDD;
 import org.apache.commons.io.FileUtils;
 import org.xml.sax.SAXException;
 
+import parser.Connection;
+import parser.ConnectionXMLParser;
 import fault.tree.model.xml.GateNode;
 import fault.tree.model.xml.parser.FaultTreeXMLParser;
 import faultTreeToBdd.FaultTreeToBdd;
@@ -19,6 +21,8 @@ public class Program {
 	public static void main(String[] args) {
 		File faultTreeInput = FileUtils.toFile(Program.class
 				.getResource("resources/data.xml"));
+		File connectionsOfMarkovChainsInput = FileUtils.toFile(Program.class
+				.getResource("resources/markovchains.xml"));
 		FaultTreeToBdd ftToBDD = new FaultTreeToBdd();
 		GateNode faultTree;
 		try {
@@ -27,8 +31,12 @@ public class Program {
 			System.out.println("Tree is built.");
 			BDD bdd = ftToBDD.faultTreeToBDD(faultTree);
 			System.out.println("BDD is built");
-			double discreteProbability = ftToBDD.getFailure(bdd);
-			System.out.println("Discrete probability = " + discreteProbability);
+			double probability = ftToBDD.getFailure(bdd);
+			System.out.println("Probability = " + probability);
+			ConnectionXMLParser connectionParser = new ConnectionXMLParser();
+			List<Connection> chains = connectionParser
+					.parse(connectionsOfMarkovChainsInput.getAbsolutePath());
+			System.out.println("Parsed markov chains");
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
