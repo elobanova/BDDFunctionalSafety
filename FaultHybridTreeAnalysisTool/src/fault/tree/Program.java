@@ -16,14 +16,14 @@ import faultTreeToBdd.FaultTreeToBdd;
 
 public class Program {
 	public static void main(String[] args) {
-		File faultTreeInput = FileUtils.toFile(Program.class.getResource("resources/data2.xml"));
+		File faultTreeInput = FileUtils.toFile(Program.class.getResource("resources/data.xml"));
 		FaultTreeToBdd ftToBDD = new FaultTreeToBdd();
 		GateNode faultTree;
 		try {
 			faultTree = new FaultTreeXMLParser().readFaultTree(faultTreeInput.getAbsolutePath());
 			System.out.println("Tree is built.");
 			BDD bdd = ftToBDD.faultTreeToBDD(faultTree);
-			
+			System.out.println("BDD is built");
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
