@@ -43,6 +43,8 @@ public class Program {
 			RealMatrix generatorMatrix = SeriesComputationUtils
 					.buildGeneratorMatrix(chains,
 							ftToBDD.getGeneratorMatrixSize());
+			RealMatrix seriesMatrix = SeriesComputationUtils.calculateTimeSeries(ftToBDD.getProbabilitiesForBasicEvents(), generatorMatrix, 5.0);
+			System.out.println("Calculated the series for the initial time");
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

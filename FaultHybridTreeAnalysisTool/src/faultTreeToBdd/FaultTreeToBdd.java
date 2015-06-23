@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import net.sf.javabdd.BDD;
@@ -73,9 +74,9 @@ public class FaultTreeToBdd {
 		List<?> list = (List<?>) bddTree.allsat();
 		double failureProbability = 0;
 		byte[] solutions;
-		for (Object o : list) {
+		for (Object item : list) {
 			double current = 1.0;
-			solutions = (byte[]) o;
+			solutions = (byte[]) item;
 			for (int i = 0; i < solutions.length; i++) {
 				if (solutions[i] == TRUE_SAT_VALUE) {
 					current *= probabilities.get(i);
@@ -87,8 +88,22 @@ public class FaultTreeToBdd {
 		}
 		return failureProbability;
 	}
-	
+
 	public int getGeneratorMatrixSize() {
 		return idMap.size();
+	}
+
+	public Set<Integer> getIdMap() {
+		return this.idMap;
+	}
+
+	public Map<Integer, Double> getProbabilitiesForBasicEvents() {
+		Map<Integer, Double> result = new HashMap<>();
+		for (Entry<Integer, Double> entry : probabilities.entrySet()) {
+			if (this.idMap.contains(entry.getKey())) {
+				result.put(entry.getKey(), entry.getValue());
+			}
+		}
+		return result;
 	}
 }
