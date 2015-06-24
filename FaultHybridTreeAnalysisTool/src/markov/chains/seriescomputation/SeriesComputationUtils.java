@@ -81,9 +81,9 @@ public class SeriesComputationUtils {
 			return MatrixUtils.createRowRealMatrix(sortedDoubleProbabilities);
 		}
 
-		Integer entries = ((Double) (time / TIME_INTERVAL)).intValue();
+		int numberOfTrackedEntries = (int) (time / TIME_INTERVAL);
 		RealMatrix matrixToMultiply = MatrixUtils.createRealMatrix(MAX_NUMBER_OF_ITERATIONS, matrixSize);
-		RealMatrix chainProbMatrix = MatrixUtils.createRealMatrix(entries + 1, matrixSize);
+		RealMatrix chainProbMatrix = MatrixUtils.createRealMatrix(numberOfTrackedEntries + 1, matrixSize);
 		RealVector startingDistribution = MatrixUtils.createRealVector(sortedDoubleProbabilities);
 		RealMatrix iMatrix = MatrixUtils.createRealIdentityMatrix(matrixSize);
 

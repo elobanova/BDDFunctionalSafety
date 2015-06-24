@@ -17,6 +17,7 @@ import org.xml.sax.SAXException;
 
 import fault.tree.model.xml.GateNode;
 import fault.tree.model.xml.parser.FaultTreeXMLParser;
+import fault.tree.visualizer.Visualizer;
 import faultTreeToBdd.FaultTreeToBdd;
 
 public class Program {
@@ -43,8 +44,9 @@ public class Program {
 			RealMatrix generatorMatrix = SeriesComputationUtils
 					.buildGeneratorMatrix(chains,
 							ftToBDD.getGeneratorMatrixSize());
-			RealMatrix seriesMatrix = SeriesComputationUtils.calculateTimeSeries(ftToBDD.getProbabilitiesForBasicEvents(), generatorMatrix, 5.0);
+			RealMatrix seriesMatrix = SeriesComputationUtils.calculateTimeSeries(ftToBDD.getProbabilitiesForBasicEvents(), generatorMatrix, 40.0);
 			System.out.println("Calculated the series for the initial time");
+			Visualizer.paint(seriesMatrix);
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
