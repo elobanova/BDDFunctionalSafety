@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<connections>
+<connections missionTime="60.0" interval="0.5">
 	<connection from="1" to="2" probability="0.2" />
 	<connection from="2" to="1" probability="0.1" />
 	<connection from="2" to="3" probability="0.1" />

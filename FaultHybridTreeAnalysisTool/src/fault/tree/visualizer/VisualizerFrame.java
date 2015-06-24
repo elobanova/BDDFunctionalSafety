@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
-import markov.chains.seriescomputation.SeriesComputationUtils;
+import markov.chains.parser.ConnectionXMLParser;
 
 import org.apache.commons.math3.linear.RealMatrix;
 
@@ -37,12 +37,13 @@ public class VisualizerFrame extends JFrame {
 		int rowDimension = seriesMatrix.getRowDimension();
 		for (int i = 1; i < rowDimension; i++) {
 			g.setColor(Color.LIGHT_GRAY);
-			g.drawLine(i * (getWidth() / rowDimension) + AXIS_OFFSET, AXIS_OFFSET, i * (getWidth() / rowDimension)
-					+ AXIS_OFFSET, getHeight() - AXIS_OFFSET);
+			g.drawLine(i * ((getWidth() - 2 * AXIS_OFFSET) / rowDimension) + AXIS_OFFSET, AXIS_OFFSET, i
+					* ((getWidth() - 2 * AXIS_OFFSET) / rowDimension) + AXIS_OFFSET, getHeight() - AXIS_OFFSET);
 			if (i % 5 == 0) {
 				g.setColor(Color.DARK_GRAY);
-				g.drawString(String.valueOf(SeriesComputationUtils.TIME_INTERVAL * i), i * (getWidth() / rowDimension),
-						getHeight() - g.getFontMetrics().getHeight());
+				g.drawString(String.valueOf(ConnectionXMLParser.TIME_INTERVAL * i), i
+						* ((getWidth() - 2 * AXIS_OFFSET) / rowDimension) + AXIS_OFFSET, getHeight()
+						- g.getFontMetrics().getHeight());
 			}
 		}
 	}

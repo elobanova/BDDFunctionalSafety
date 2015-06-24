@@ -22,29 +22,25 @@ import faultTreeToBdd.FaultTreeToBdd;
 
 public class Program {
 	public static void main(String[] args) {
-		File faultTreeInput = FileUtils.toFile(Program.class
-				.getResource("resources/data3.xml"));
-		File connectionsOfMarkovChainsInput = FileUtils.toFile(Program.class
-				.getResource("resources/markovchains.xml"));
+		File faultTreeInput = FileUtils.toFile(Program.class.getResource("resources/data3.xml"));
+		File connectionsOfMarkovChainsInput = FileUtils.toFile(Program.class.getResource("resources/markovchains.xml"));
 		FaultTreeToBdd ftToBDD = new FaultTreeToBdd();
 		GateNode faultTree;
 		try {
-			faultTree = new FaultTreeXMLParser().readFaultTree(faultTreeInput
-					.getAbsolutePath());
+			faultTree = new FaultTreeXMLParser().readFaultTree(faultTreeInput.getAbsolutePath());
 			System.out.println("Tree is built.");
 			BDD bdd = ftToBDD.faultTreeToBDD(faultTree);
 			System.out.println("BDD is built");
 			double probability = ftToBDD.getFailure(bdd);
 			System.out.println("Probability = " + probability);
 			ConnectionXMLParser connectionParser = new ConnectionXMLParser();
-			List<Connection> chains = connectionParser
-					.parse(connectionsOfMarkovChainsInput.getAbsolutePath());
+			List<Connection> chains = connectionParser.parse(connectionsOfMarkovChainsInput.getAbsolutePath());
 			System.out.println("Parsed markov chains");
 			System.out.println(ftToBDD.getGeneratorMatrixSize());
-			RealMatrix generatorMatrix = SeriesComputationUtils
-					.buildGeneratorMatrix(chains,
-							ftToBDD.getGeneratorMatrixSize());
-			RealMatrix seriesMatrix = SeriesComputationUtils.calculateTimeSeries(ftToBDD.getProbabilitiesForBasicEvents(), generatorMatrix, 40.0);
+			RealMatrix generatorMatrix = SeriesComputationUtils.buildGeneratorMatrix(chains,
+					ftToBDD.getGeneratorMatrixSize());
+			RealMatrix seriesMatrix = SeriesComputationUtils.calculateTimeSeries(
+					ftToBDD.getProbabilitiesForBasicEvents(), generatorMatrix, ConnectionXMLParser.TIME, ConnectionXMLParser.TIME_INTERVAL);
 			System.out.println("Calculated the series for the initial time");
 			Visualizer.paint(seriesMatrix);
 		} catch (ParserConfigurationException | SAXException | IOException e) {

@@ -14,7 +14,6 @@ import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 
 public class SeriesComputationUtils {
-	public static final double TIME_INTERVAL = 0.5;
 	private static final int MAX_NUMBER_OF_ITERATIONS = 15;
 
 	private static double computeGamma(RealMatrix generatorMatrix) {
@@ -30,9 +29,9 @@ public class SeriesComputationUtils {
 	}
 
 	private static void computeDistributionInTime(RealMatrix chainProbMatrix, double gammaValue, double time,
-			RealMatrix matrixToMultiply) {
+			RealMatrix matrixToMultiply, double timeInterval) {
 		int pos = 1;
-		for (double t = TIME_INTERVAL; t <= time; t += TIME_INTERVAL) {
+		for (double t = timeInterval; t <= time; t += timeInterval) {
 			RealVector current = chainProbMatrix.getRowVector(pos);
 			for (int n = 0; n < MAX_NUMBER_OF_ITERATIONS; n++) {
 				double expValue = Math.exp(-gammaValue * t);
@@ -63,7 +62,7 @@ public class SeriesComputationUtils {
 	}
 
 	public static RealMatrix calculateTimeSeries(Map<Integer, Double> probabilities, RealMatrix generatorMatrix,
-			double time) {
+			double time, double timeInterval) {
 		SortedSet<Integer> keys = new TreeSet<Integer>(probabilities.keySet());
 		List<Double> sortedProbabilities = new ArrayList<>();
 		for (Integer key : keys) {
@@ -81,7 +80,7 @@ public class SeriesComputationUtils {
 			return MatrixUtils.createRowRealMatrix(sortedDoubleProbabilities);
 		}
 
-		int numberOfTrackedEntries = (int) (time / TIME_INTERVAL);
+		int numberOfTrackedEntries = (int) (time / timeInterval);
 		RealMatrix matrixToMultiply = MatrixUtils.createRealMatrix(MAX_NUMBER_OF_ITERATIONS, matrixSize);
 		RealMatrix chainProbMatrix = MatrixUtils.createRealMatrix(numberOfTrackedEntries + 1, matrixSize);
 		RealVector startingDistribution = MatrixUtils.createRealVector(sortedDoubleProbabilities);
@@ -95,7 +94,7 @@ public class SeriesComputationUtils {
 			matrixToMultiply.setRowVector(i, transMatrix.power(i).preMultiply(startingDistribution));
 		}
 
-		computeDistributionInTime(chainProbMatrix, gammaValue, time, matrixToMultiply);
+		computeDistributionInTime(chainProbMatrix, gammaValue, time, matrixToMultiply, timeInterval);
 		return chainProbMatrix;
 	}
 }
