@@ -14,8 +14,8 @@ import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 
 public class SeriesComputationUtils {
-	private static final double TIME_INTERVAL = 0.5;
-	private static final int MAX_NUMBER_OF_ITERATIONS = 20;
+	public static final double TIME_INTERVAL = 0.5;
+	private static final int MAX_NUMBER_OF_ITERATIONS = 15;
 
 	private static double computeGamma(RealMatrix generatorMatrix) {
 		double gammaValue = 0.0;

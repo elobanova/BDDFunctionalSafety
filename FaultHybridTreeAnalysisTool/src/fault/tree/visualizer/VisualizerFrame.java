@@ -6,11 +6,13 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
+import markov.chains.seriescomputation.SeriesComputationUtils;
+
 import org.apache.commons.math3.linear.RealMatrix;
 
 public class VisualizerFrame extends JFrame {
 
-	private static final int AXIS_OFFSET = 20;
+	private static final int AXIS_OFFSET = 50;
 	private static final long serialVersionUID = 1L;
 	private final RealMatrix seriesMatrix;
 
@@ -27,12 +29,28 @@ public class VisualizerFrame extends JFrame {
 		g.setColor(Color.BLACK);
 		g.drawLine(AXIS_OFFSET, getHeight() - AXIS_OFFSET, getWidth() - AXIS_OFFSET, getHeight() - AXIS_OFFSET);
 		g.drawLine(AXIS_OFFSET, getHeight() - AXIS_OFFSET, AXIS_OFFSET, AXIS_OFFSET);
+		paintWire(g);
 		paintSeries(g);
+	}
+
+	private void paintWire(Graphics g) {
+		int rowDimension = seriesMatrix.getRowDimension();
+		for (int i = 1; i < rowDimension; i++) {
+			g.setColor(Color.LIGHT_GRAY);
+			g.drawLine(i * (getWidth() / rowDimension) + AXIS_OFFSET, AXIS_OFFSET, i * (getWidth() / rowDimension)
+					+ AXIS_OFFSET, getHeight() - AXIS_OFFSET);
+			if (i % 5 == 0) {
+				g.setColor(Color.DARK_GRAY);
+				g.drawString(String.valueOf(SeriesComputationUtils.TIME_INTERVAL * i), i * (getWidth() / rowDimension),
+						getHeight() - g.getFontMetrics().getHeight());
+			}
+		}
 	}
 
 	private void paintSeries(Graphics g) {
 		int columnDimension = seriesMatrix.getColumnDimension();
 		int rowDimension = seriesMatrix.getRowDimension();
+
 		ArrayList<Integer> uniqueColors = getUniqueColors(columnDimension);
 		int timeStep = (getWidth() - AXIS_OFFSET) / rowDimension;
 		for (int i = 0; i < columnDimension; i++) {
@@ -44,7 +62,7 @@ public class VisualizerFrame extends JFrame {
 			int[] yPoints = new int[numberOfTimeStamps];
 			for (int j = 0; j < numberOfTimeStamps; j++) {
 				xPoints[j] = j * timeStep + AXIS_OFFSET;
-				yPoints[j] = (int) (getHeight() * (1 - seriesMatrix.getEntry(j, i)) - AXIS_OFFSET);
+				yPoints[j] = (int) (AXIS_OFFSET + (getHeight() - 2 * AXIS_OFFSET) * (1 - seriesMatrix.getEntry(j, i)));
 			}
 			g.drawPolyline(xPoints, yPoints, numberOfTimeStamps);
 			String label = "State " + (i + 1);
