@@ -17,7 +17,7 @@ import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 
 public class SeriesComputationUtils {
-	private static final int MAX_NUMBER_OF_ITERATIONS = 20;
+	private static final int MAX_NUMBER_OF_ITERATIONS = 21;
 	private static HashMap<Integer, Integer> markovChains = new HashMap<>();
 
 	private static double computeGamma(RealMatrix generatorMatrix) {

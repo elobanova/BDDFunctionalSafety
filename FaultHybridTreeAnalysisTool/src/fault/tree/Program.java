@@ -19,6 +19,7 @@ import org.apache.commons.math3.linear.RealVector;
 import org.xml.sax.SAXException;
 
 import fault.tree.filestreamer.FileStreamer;
+import fault.tree.model.xml.BasicNode;
 import fault.tree.model.xml.GateNode;
 import fault.tree.model.xml.parser.FaultTreeXMLParser;
 import fault.tree.visualizer.Visualizer;
@@ -33,18 +34,15 @@ public class Program {
 		try {
 			faultTree = new FaultTreeXMLParser().readFaultTree(faultTreeInput.getAbsolutePath());
 			System.out.println("Tree is built.");
-
-			BDD bdd = ftToBDD.faultTreeToBDD(faultTree);
-
+			ConnectionXMLParser connectionParser = new ConnectionXMLParser(connectionsOfMarkovChainsInput.getAbsolutePath());
+			List<BasicNode> basicNodesFromMarkovChains = connectionParser.getBasicNodes();
+			BDD bdd = ftToBDD.faultTreeToBDD(faultTree, basicNodesFromMarkovChains);
 			System.out.println("BDD is built");
 			bdd.printDot();
-			ConnectionXMLParser connectionParser = new ConnectionXMLParser();
-			List<Connection> chains = connectionParser.parse(connectionsOfMarkovChainsInput.getAbsolutePath(), ftToBDD);
+			List<Connection> chains = connectionParser.parse();
 			System.out.println("Parsed markov chains");
 			double probability = ftToBDD.getFailure(bdd);
 			System.out.println("Probability = " + probability);
-			System.out.println(ftToBDD.getProbabilitiesForBasicEvents());
-			System.out.println(ftToBDD.getGeneratorMatrixSize());
 
 			RealMatrix generatorMatrix = SeriesComputationUtils.buildGeneratorMatrix(chains,
 					ftToBDD.getGeneratorMatrixSize());
