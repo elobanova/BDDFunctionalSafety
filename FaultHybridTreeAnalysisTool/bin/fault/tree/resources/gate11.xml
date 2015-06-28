@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faultTree type="hazard">
+	<gate id="11" level="5" operation="OR">
+		<basic name="1" id="1" level="6" probability="0.90000" />
+		<basic name="2" id="2" level="6" probability="0.10000" />
+	</gate>
+</faultTree>

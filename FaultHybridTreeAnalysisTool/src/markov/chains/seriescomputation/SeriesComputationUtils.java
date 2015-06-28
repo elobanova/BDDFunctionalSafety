@@ -2,6 +2,7 @@ package markov.chains.seriescomputation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,9 +139,6 @@ public class SeriesComputationUtils {
 			RealMatrix seriesMatrix, HashMap<Integer, Integer> markovChains) {
 		List<?> list = (List<?>) bddTree.allsat();
 		int matrixSize = seriesMatrix.getRowDimension();
-		RealMatrix modifiedMatrix = MatrixUtils.createRealMatrix(seriesMatrix.getRowDimension(), seriesMatrix.getColumnDimension());
-		modifiedMatrix.setSubMatrix(seriesMatrix.getData(), 0, 0);
-		// int statesSize = seriesMatrix.getColumnDimension();
 		double[] probabilities = new double[matrixSize];
 
 		byte[] solutions;
@@ -148,16 +146,19 @@ public class SeriesComputationUtils {
 			double[] currentProb = new double[matrixSize];
 			Arrays.fill(currentProb, 1.0);
 			solutions = (byte[]) item;
-			if (checkSolution(markovChains, solutions, modifiedMatrix)){
+			if (checkSolution(markovChains, solutions)){
 				for (int i = 0; i < solutions.length; i++) {
 					if (solutions[i] == 1) {
 						for (int j = 0; j < matrixSize; j++) {
 							currentProb[j] *= seriesMatrix.getEntry(j, i);
 						}
 					} else if (solutions[i] == 0) {
-						for (int j = 0; j < matrixSize; j++) {
-							currentProb[j] *= (1 - seriesMatrix.getEntry(j, i));
-						}
+						//check if there is another state in the same markov chain
+	                    if (Collections.frequency(markovChains.values(), markovChains.get(i)) == 1) {
+							for (int j = 0; j < matrixSize; j++) {
+								currentProb[j] *= (1 - seriesMatrix.getEntry(j, i));
+							}
+	                    }
 					}
 				}
 				for (int i = 0; i < probabilities.length; i++) {
@@ -170,8 +171,8 @@ public class SeriesComputationUtils {
 		return topEventProbabilities;
 	}
 	
-	private static boolean checkSolution(HashMap<Integer, Integer> markovChains, byte[] solution, 
-			RealMatrix modifiedMatrix) {
+	//check that in one MC only one state could have value 1 
+	private static boolean checkSolution(HashMap<Integer, Integer> markovChains, byte[] solution) {
         int valueA;
         int valueB;
         for (int state = 0; state < solution.length; state++) {
@@ -181,11 +182,7 @@ public class SeriesComputationUtils {
                 if (markovChains.get(state) == markovChains.get(n)) {
                     if (state != n && valueA == 1 && valueB == 1) {
                         return false;
-                    } else if (state !=n && ((valueA == 0 && valueB==1) | ((valueA == 1 && valueB==0)) )){
-                    	double[] currentProb = new double[modifiedMatrix.getRowDimension()];
-            			Arrays.fill(currentProb, 1.0);
-                    	modifiedMatrix.setColumn(n, currentProb);
-                    }
+                    } 
                 }
             }
         }

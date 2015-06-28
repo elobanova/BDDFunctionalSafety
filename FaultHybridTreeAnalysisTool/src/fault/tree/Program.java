@@ -26,7 +26,7 @@ import faultTreeToBdd.FaultTreeToBdd;
 
 public class Program {
 	public static void main(String[] args) {
-		File faultTreeInput = FileUtils.toFile(Program.class.getResource("resources/gate12.xml"));
+		File faultTreeInput = FileUtils.toFile(Program.class.getResource("resources/gate14.xml"));
 		File connectionsOfMarkovChainsInput = FileUtils.toFile(Program.class.getResource("resources/markovchains.xml"));
 		FaultTreeToBdd ftToBDD = new FaultTreeToBdd();
 		GateNode faultTree;
