@@ -1,5 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<connections missionTime="60.0" interval="0.5">
+<connections missionTime="40.0" interval="0.5">
+	<basic name="1" id="1" probability="0.9" />
+	<basic name="2" id="2" probability="0.1" />
+	<basic name="3" id="3" probability="0.0" />
+	<basic name="4" id="4" probability="1.0" />
+	<basic name="5" id="5" probability="0.0" />
+	<basic name="6" id="6" probability="0.0" />
 	<connection from="1" to="2" probability="0.2" />
 	<connection from="2" to="1" probability="0.1" />
 	<connection from="2" to="3" probability="0.1" />

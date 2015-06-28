@@ -3,21 +3,21 @@
 	<gate id="15" level="2" operation="AND">
 		<gate id="14" level="3" operation="OR">
 			<gate id="12" level="4" operation="AND">
-				<basic name="4" id="4" level="2" probability="0.90484" />
+				<basic name="4" id="4" level="2" probability="1.00000" />
 				<gate id="11" level="5" operation="OR">
-					<basic name="1" id="1" level="6" probability="0.75246" />
-					<basic name="2" id="2" level="6" probability="0.23090" />
+					<basic name="1" id="1" level="6" probability="0.90000" />
+					<basic name="2" id="2" level="6" probability="0.10000" />
 				</gate>
 			</gate>
-			<basic name="3" id="3" level="4" probability="0.01664" />
+			<basic name="3" id="3" level="4" probability="0.00000" />
 			<gate id="13" level="4" operation="AND">
-				<basic name="2" id="2" level="5" probability="0.23090" />
-				<basic name="5" id="5" level="5" probability="0.09278" />
+				<basic name="2" id="2" level="5" probability="0.10000" />
+				<basic name="5" id="5" level="5" probability="0.00000 " />
 			</gate>
 		</gate>
 		<gate id="13" level="4" operation="AND">
-			<basic name="2" id="2" level="5" probability="0.23090" />
-			<basic name="5" id="5" level="5" probability="0.09278" />
+			<basic name="2" id="2" level="5" probability="0.10000" />
+			<basic name="5" id="5" level="5" probability="0.00000 " />
 		</gate>
 	</gate>
 </faultTree>

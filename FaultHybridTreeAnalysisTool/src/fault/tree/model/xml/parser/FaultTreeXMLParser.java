@@ -22,7 +22,7 @@ import fault.tree.model.xml.GateNode;
 import fault.tree.model.xml.OperationEnum;
 
 public class FaultTreeXMLParser {
-	private static final String PROBABILITY_ATTRIBUTE_NAME = "probability";
+	//private static final String PROBABILITY_ATTRIBUTE_NAME = "probability";
 	private static final String NAME_ATTRIBUTE_NAME = "name";
 	private static final String OPERATION_ATTRIBUTE_NAME = "operation";
 	private static final String LEVEL_ATTRIBUTE_NAME = "level";
@@ -99,8 +99,8 @@ public class FaultTreeXMLParser {
 					.getAttribute(LEVEL_ATTRIBUTE_NAME)));
 			faultTreeBasicEvent.setName(basicElement
 					.getAttribute(NAME_ATTRIBUTE_NAME));
-			faultTreeBasicEvent.setProbability(Double.valueOf(basicElement
-					.getAttribute(PROBABILITY_ATTRIBUTE_NAME)));
+			//faultTreeBasicEvent.setProbability(Double.valueOf(basicElement
+			//		.getAttribute(PROBABILITY_ATTRIBUTE_NAME)));
 			return faultTreeBasicEvent;
 		}
 

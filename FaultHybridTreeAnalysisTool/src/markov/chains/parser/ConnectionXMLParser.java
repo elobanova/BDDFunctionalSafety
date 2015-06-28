@@ -16,6 +16,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import faultTreeToBdd.FaultTreeToBdd;
+
 public class ConnectionXMLParser {
 	private static final String PROBABILITY_ATTRIBUTE_NAME = "probability";
 	private static final String ID_TO_ATTRIBUTE_NAME = "to";
@@ -24,10 +26,12 @@ public class ConnectionXMLParser {
 	private static final String INTERVAL_ATTRIBUTE_NAME = "interval";
 
 	private static final String CONNECTION_NODE_NAME = "connection";
+	private static final String STATE_NODE_NAME = "basic";
 	public static double TIME = 40.0;
 	public static double TIME_INTERVAL = 0.5;
 
-	public List<Connection> parse(String filePath) throws ParserConfigurationException, SAXException, IOException {
+	public List<Connection> parse(String filePath, FaultTreeToBdd ftToBDD)
+			throws ParserConfigurationException, SAXException, IOException {
 		List<Connection> connections = new ArrayList<>();
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
@@ -36,7 +40,21 @@ public class ConnectionXMLParser {
 		Element documentElement = document.getDocumentElement();
 		TIME_INTERVAL = Double.valueOf(documentElement.getAttribute(INTERVAL_ATTRIBUTE_NAME));
 		TIME = Double.valueOf(documentElement.getAttribute(MISSION_TIME_ATTRIBUTE_NAME));
-
+		
+		NodeList states = document.getElementsByTagName(STATE_NODE_NAME);
+		for (int i = 0; i < states.getLength(); i++) {
+			Node currentNode = states.item(i);
+			if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element currentElement = (Element) currentNode;
+				int id = Integer.valueOf(currentElement.getAttribute("id"));
+				double probability = Double.valueOf(currentElement.getAttribute(PROBABILITY_ATTRIBUTE_NAME));
+				if (!ftToBDD.getIdMap().contains(id-1)){
+					ftToBDD.addToIdMap(id-1);
+				}
+				ftToBDD.addProbabilityOfBasicNode(id-1, probability);
+			}
+		}
+		
 		NodeList nodes = document.getElementsByTagName(CONNECTION_NODE_NAME);
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node currentNode = nodes.item(i);
