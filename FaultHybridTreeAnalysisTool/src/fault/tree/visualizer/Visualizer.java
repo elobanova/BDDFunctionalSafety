@@ -1,7 +1,5 @@
 package fault.tree.visualizer;
 
-import java.awt.Color;
-import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 
@@ -20,7 +18,7 @@ public class Visualizer {
 		int height = gd.getDisplayMode().getHeight();
 		frame.setSize(width, height);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 		frame.setVisible(true);
 	}
 

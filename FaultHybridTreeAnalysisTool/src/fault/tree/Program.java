@@ -18,6 +18,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.xml.sax.SAXException;
 
+import fault.tree.filestreamer.FileStreamer;
 import fault.tree.model.xml.GateNode;
 import fault.tree.model.xml.parser.FaultTreeXMLParser;
 import fault.tree.visualizer.Visualizer;
@@ -32,7 +33,9 @@ public class Program {
 		try {
 			faultTree = new FaultTreeXMLParser().readFaultTree(faultTreeInput.getAbsolutePath());
 			System.out.println("Tree is built.");
+
 			BDD bdd = ftToBDD.faultTreeToBDD(faultTree); 
+
 			System.out.println("BDD is built");
 			bdd.printDot();
 			ConnectionXMLParser connectionParser = new ConnectionXMLParser();
@@ -50,6 +53,7 @@ public class Program {
 			RealMatrix seriesMatrix = SeriesComputationUtils.calculateTimeSeries(
 					ftToBDD.getProbabilitiesForBasicEvents(), generatorMatrix, ConnectionXMLParser.TIME, ConnectionXMLParser.TIME_INTERVAL);
 			System.out.println("Calculated the series for the initial time");
+
 			RealVector probabilitiesOfTopEvent = SeriesComputationUtils.calculateProbabilitiesOfTopEvent(
 					bdd, seriesMatrix, markovChains);
 			System.out.println("Calculated the series for the top event");
@@ -58,6 +62,9 @@ public class Program {
 			results.setSubMatrix(seriesMatrix.getData(), 0, 0);
 			results.setColumnVector(seriesMatrix.getColumnDimension(), probabilitiesOfTopEvent);
 			Visualizer.paint(results);
+
+			FileStreamer.ouput(results);
+
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
