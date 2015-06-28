@@ -34,7 +34,8 @@ public class Program {
 		try {
 			faultTree = new FaultTreeXMLParser().readFaultTree(faultTreeInput.getAbsolutePath());
 			System.out.println("Tree is built.");
-			ConnectionXMLParser connectionParser = new ConnectionXMLParser(connectionsOfMarkovChainsInput.getAbsolutePath());
+			ConnectionXMLParser connectionParser = new ConnectionXMLParser(
+					connectionsOfMarkovChainsInput.getAbsolutePath());
 			List<BasicNode> basicNodesFromMarkovChains = connectionParser.getBasicNodes();
 			BDD bdd = ftToBDD.faultTreeToBDD(faultTree, basicNodesFromMarkovChains);
 			System.out.println("BDD is built");
@@ -60,8 +61,8 @@ public class Program {
 					seriesMatrix.getColumnDimension() + 1);
 			results.setSubMatrix(seriesMatrix.getData(), 0, 0);
 			results.setColumnVector(seriesMatrix.getColumnDimension(), probabilitiesOfTopEvent);
-			Visualizer.paint(results);
-			FileStreamer.ouput(results);
+			Visualizer.paint(results, faultTree.getId());
+			FileStreamer.ouput(results, faultTree.getId());
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			e.printStackTrace();
 		}

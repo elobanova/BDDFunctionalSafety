@@ -39,12 +39,9 @@ public class SeriesComputationUtils {
 		for (double t = timeInterval; t <= time; t += timeInterval) {
 			RealVector current = chainProbMatrix.getRowVector(pos);
 			for (int n = 0; n < MAX_NUMBER_OF_ITERATIONS; n++) {
-				double temp = Math.pow((gammaValue * t), n) / CombinatoricsUtils.factorial(n)
-						* Math.exp(-gammaValue * t);
 				double expValue = Math.exp(-gammaValue * t);
-				current = current.add(matrixToMultiply.getRowVector(n).mapMultiply(temp));
-				// Math.pow((gammaValue * t), n)
-				// / CombinatoricsUtils.factorial(n)* expValue));
+				current = current.add(matrixToMultiply.getRowVector(n).mapMultiply(
+						Math.pow((gammaValue * t), n) / CombinatoricsUtils.factorial(n) * expValue));
 			}
 			chainProbMatrix.setRowVector(pos, current);
 			pos++;
@@ -137,19 +134,20 @@ public class SeriesComputationUtils {
 			Arrays.fill(currentProb, 1.0);
 			solutions = (byte[]) item;
 
-			if (checkSolution(markovChains, solutions)){
+			if (checkSolution(markovChains, solutions)) {
 				for (int i = 0; i < solutions.length; i++) {
 					if (solutions[i] == 1) {
 						for (int j = 0; j < matrixSize; j++) {
 							currentProb[j] *= seriesMatrix.getEntry(j, i);
 						}
 					} else if (solutions[i] == 0) {
-						//check if there is another state in the same markov chain
-	                    if (Collections.frequency(markovChains.values(), markovChains.get(i)) == 1) {
+						// check if there is another state in the same markov
+						// chain
+						if (Collections.frequency(markovChains.values(), markovChains.get(i)) == 1) {
 							for (int j = 0; j < matrixSize; j++) {
 								currentProb[j] *= (1 - seriesMatrix.getEntry(j, i));
 							}
-	                    }
+						}
 					}
 				}
 				for (int i = 0; i < probabilities.length; i++) {
@@ -160,23 +158,23 @@ public class SeriesComputationUtils {
 		RealVector topEventProbabilities = MatrixUtils.createRealVector(probabilities);
 		return topEventProbabilities;
 	}
-	
-	//check that in one MC only one state could have value 1 
+
+	// check that in one MC only one state could have value 1
 	private static boolean checkSolution(HashMap<Integer, Integer> markovChains, byte[] solution) {
-        int valueA;
-        int valueB;
-        for (int state = 0; state < solution.length; state++) {
-            valueA = solution[state];
-            for (int n = state; n < solution.length; n++) {
-                valueB = solution[n];
-                if (markovChains.get(state) == markovChains.get(n)) {
-                    if (state != n && valueA == 1 && valueB == 1) {
-                        return false;
-                    } 
-                }
-            }
-        }
-        return true;
-    }
+		int valueA;
+		int valueB;
+		for (int state = 0; state < solution.length; state++) {
+			valueA = solution[state];
+			for (int n = state; n < solution.length; n++) {
+				valueB = solution[n];
+				if (markovChains.get(state) == markovChains.get(n)) {
+					if (state != n && valueA == 1 && valueB == 1) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
 
 }

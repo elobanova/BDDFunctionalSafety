@@ -17,11 +17,15 @@ public class VisualizerFrame extends JFrame {
 	private static final int DEFAULT_LINE_WIDTH = 2;
 	private static final int AXIS_OFFSET = 50;
 	private static final long serialVersionUID = 1L;
+	private static final int NUMBER_OF_HORIZONTAL_WIRES = 8;
+	private static final int TEXT_Y_OFFSET = 5;
 	private final RealMatrix seriesMatrix;
+	private final int topGateId;
 
-	public VisualizerFrame(String frameTitle, RealMatrix seriesMatrix) {
+	public VisualizerFrame(String frameTitle, RealMatrix seriesMatrix, int topGateId) {
 		super(frameTitle);
 		this.seriesMatrix = seriesMatrix;
+		this.topGateId = topGateId;
 	}
 
 	@Override
@@ -49,6 +53,18 @@ public class VisualizerFrame extends JFrame {
 						- g.getFontMetrics().getHeight());
 			}
 		}
+
+		for (int i = 1; i <= NUMBER_OF_HORIZONTAL_WIRES; i++) {
+			g.setColor(Color.LIGHT_GRAY);
+			int horizontalWireY = getHeight() - AXIS_OFFSET - i * (getHeight() - 2 * AXIS_OFFSET)
+					/ NUMBER_OF_HORIZONTAL_WIRES;
+			g.drawLine(AXIS_OFFSET, horizontalWireY, getWidth() - 2 * AXIS_OFFSET, horizontalWireY);
+
+			g.setColor(Color.DARK_GRAY);
+			String axisYText = String.valueOf((double) i / NUMBER_OF_HORIZONTAL_WIRES);
+			int axisYTextWidth = g.getFontMetrics().stringWidth(axisYText);
+			g.drawString(axisYText, AXIS_OFFSET - axisYTextWidth - TEXT_Y_OFFSET, horizontalWireY);
+		}
 	}
 
 	private void paintSeries(Graphics g) {
@@ -71,7 +87,7 @@ public class VisualizerFrame extends JFrame {
 			Graphics2D g2 = (Graphics2D) g;
 			g2.setStroke(new BasicStroke(DEFAULT_LINE_WIDTH));
 			g.drawPolyline(xPoints, yPoints, numberOfTimeStamps);
-			String label = "State " + (i + 1);
+			String label = i == columnDimension - 1 ? "Gate " + topGateId : "State " + (i + 1);
 			g.drawString(label, getWidth() - AXIS_OFFSET - g.getFontMetrics().stringWidth(label),
 					yPoints[numberOfTimeStamps - 1]);
 		}

@@ -32,15 +32,15 @@ public class FileStreamer {
 		}
 	}
 
-	public static void ouput(RealMatrix seriesMatrix) {
-		List<String> fileLines = generateLinesOfOutputFile(seriesMatrix);
+	public static void ouput(RealMatrix seriesMatrix, int topEventId) {
+		List<String> fileLines = generateLinesOfOutputFile(seriesMatrix, topEventId);
 		saveProgramAsCSV("series.csv", fileLines);
 	}
 
-	private static List<String> generateLinesOfOutputFile(RealMatrix seriesMatrix) {
+	private static List<String> generateLinesOfOutputFile(RealMatrix seriesMatrix, int topEventId) {
 		List<String> fileLines = new ArrayList<>();
 		int rowDimension = seriesMatrix.getRowDimension();
-		fileLines.add(getHeader(seriesMatrix.getColumnDimension()));
+		fileLines.add(getHeader(seriesMatrix.getColumnDimension(), topEventId));
 		for (int i = 0; i < rowDimension; i++) {
 			int numberOfVariables = seriesMatrix.getRow(i).length;
 			StringBuffer lineBuffer = new StringBuffer();
@@ -53,11 +53,12 @@ public class FileStreamer {
 		return fileLines;
 	}
 
-	private static String getHeader(int columnDimension) {
+	private static String getHeader(int columnDimension, int topEventId) {
 		StringBuffer header = new StringBuffer();
 		header.append("timestamp;");
 		for (int i = 0; i < columnDimension; i++) {
-			header.append("Variable " + (i + 1) + ";");
+			String event = i == columnDimension - 1 ? "Gate " + topEventId : "Variable " + (i + 1);
+			header.append(event + ";");
 		}
 		return header.toString();
 	}
