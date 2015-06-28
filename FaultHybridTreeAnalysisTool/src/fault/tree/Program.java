@@ -42,7 +42,7 @@ public class Program {
 			List<Connection> chains = connectionParser.parse();
 			System.out.println("Parsed markov chains");
 			double probability = ftToBDD.getFailure(bdd);
-			System.out.println("Probability = " + probability);
+			System.out.println("Probability for independent states = " + probability);
 
 			RealMatrix generatorMatrix = SeriesComputationUtils.buildGeneratorMatrix(chains,
 					ftToBDD.getGeneratorMatrixSize());

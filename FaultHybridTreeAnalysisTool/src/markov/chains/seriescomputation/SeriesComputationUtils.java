@@ -122,7 +122,6 @@ public class SeriesComputationUtils {
 		}
 
 		computeDistributionInTime(chainProbMatrix, gammaValue, time, matrixToMultiply, timeInterval);
-		System.out.println(chainProbMatrix.toString());
 		return chainProbMatrix;
 	}
 
