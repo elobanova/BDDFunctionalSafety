@@ -16,7 +16,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import faultTreeToBdd.FaultTreeToBdd;
+import fault.tree.model.xml.BasicNode;
 
 public class ConnectionXMLParser {
 	private static final String PROBABILITY_ATTRIBUTE_NAME = "probability";
@@ -30,17 +30,26 @@ public class ConnectionXMLParser {
 	public static double TIME = 40.0;
 	public static double TIME_INTERVAL = 0.5;
 
-	public List<Connection> parse(String filePath, FaultTreeToBdd ftToBDD)
-			throws ParserConfigurationException, SAXException, IOException {
-		List<Connection> connections = new ArrayList<>();
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		InputStream in = new FileInputStream(filePath);
-		Document document = builder.parse(in);
-		Element documentElement = document.getDocumentElement();
+	private List<Connection> connections;
+	private DocumentBuilderFactory factory;
+	private DocumentBuilder builder;
+	private InputStream in;
+	private Document document;
+	private Element documentElement;
+
+	public ConnectionXMLParser(String filePath) throws ParserConfigurationException, SAXException, IOException {
+		this.connections = new ArrayList<>();
+		this.factory = DocumentBuilderFactory.newInstance();
+		this.builder = this.factory.newDocumentBuilder();
+		this.in = new FileInputStream(filePath);
+		this.document = builder.parse(in);
+		this.documentElement = document.getDocumentElement();
 		TIME_INTERVAL = Double.valueOf(documentElement.getAttribute(INTERVAL_ATTRIBUTE_NAME));
 		TIME = Double.valueOf(documentElement.getAttribute(MISSION_TIME_ATTRIBUTE_NAME));
-		
+	}
+
+	public List<BasicNode> getBasicNodes() {
+		List<BasicNode> basicNodes = new ArrayList<>();
 		NodeList states = document.getElementsByTagName(STATE_NODE_NAME);
 		for (int i = 0; i < states.getLength(); i++) {
 			Node currentNode = states.item(i);
@@ -48,13 +57,17 @@ public class ConnectionXMLParser {
 				Element currentElement = (Element) currentNode;
 				int id = Integer.valueOf(currentElement.getAttribute("id"));
 				double probability = Double.valueOf(currentElement.getAttribute(PROBABILITY_ATTRIBUTE_NAME));
-				if (!ftToBDD.getIdMap().contains(id-1)){
-					ftToBDD.addToIdMap(id-1);
-				}
-				ftToBDD.addProbabilityOfBasicNode(id-1, probability);
+				BasicNode basicNode = new BasicNode();
+				basicNode.setId(id);
+				basicNode.setProbability(probability);
+				basicNodes.add(basicNode);
 			}
 		}
-		
+
+		return basicNodes;
+	}
+
+	public List<Connection> parse() {
 		NodeList nodes = document.getElementsByTagName(CONNECTION_NODE_NAME);
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node currentNode = nodes.item(i);

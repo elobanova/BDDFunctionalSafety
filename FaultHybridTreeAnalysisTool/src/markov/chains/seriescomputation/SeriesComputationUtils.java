@@ -18,9 +18,9 @@ import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 
 public class SeriesComputationUtils {
-	private static final int MAX_NUMBER_OF_ITERATIONS = 20;
+	private static final int MAX_NUMBER_OF_ITERATIONS = 21;
 	private static HashMap<Integer, Integer> markovChains = new HashMap<>();
-	
+
 	private static double computeGamma(RealMatrix generatorMatrix) {
 		double gammaValue = 0.0;
 		double maximalValue = 0.0;
@@ -33,19 +33,18 @@ public class SeriesComputationUtils {
 		return gammaValue;
 	}
 
-	private static void computeDistributionInTime(RealMatrix chainProbMatrix,
-			double gammaValue, double time, RealMatrix matrixToMultiply,
-			double timeInterval) {
+	private static void computeDistributionInTime(RealMatrix chainProbMatrix, double gammaValue, double time,
+			RealMatrix matrixToMultiply, double timeInterval) {
 		int pos = 1;
 		for (double t = timeInterval; t <= time; t += timeInterval) {
 			RealVector current = chainProbMatrix.getRowVector(pos);
 			for (int n = 0; n < MAX_NUMBER_OF_ITERATIONS; n++) {
-				double temp = Math.pow((gammaValue*t), n) / CombinatoricsUtils.factorial(n) * Math.exp(-gammaValue*t);
+				double temp = Math.pow((gammaValue * t), n) / CombinatoricsUtils.factorial(n)
+						* Math.exp(-gammaValue * t);
 				double expValue = Math.exp(-gammaValue * t);
-				current = current.add(matrixToMultiply.getRowVector(n)
-						.mapMultiply(temp));
-								//Math.pow((gammaValue * t), n) 
-								//		/ CombinatoricsUtils.factorial(n)* expValue));
+				current = current.add(matrixToMultiply.getRowVector(n).mapMultiply(temp));
+				// Math.pow((gammaValue * t), n)
+				// / CombinatoricsUtils.factorial(n)* expValue));
 			}
 			chainProbMatrix.setRowVector(pos, current);
 			pos++;
@@ -55,8 +54,7 @@ public class SeriesComputationUtils {
 	public static RealMatrix buildGeneratorMatrix(List<Connection> chains, int i) {
 		RealMatrix generatorMatrix = MatrixUtils.createRealMatrix(i, i);
 		for (Connection conn : chains) {
-			generatorMatrix.setEntry(conn.getIdTo() - 1, conn.getIdFrom() - 1,
-					conn.getProbability());
+			generatorMatrix.setEntry(conn.getIdTo() - 1, conn.getIdFrom() - 1, conn.getProbability());
 		}
 
 		generatorMatrix = generatorMatrix.transpose();
@@ -66,32 +64,31 @@ public class SeriesComputationUtils {
 			for (int k = 0; k < generatorMatrix.getColumnDimension(); k++) {
 				sumOfElementsInTheRow += generatorMatrix.getEntry(j, k);
 				if (generatorMatrix.getEntry(j, k) != 0) {
-                    if (markovChains.containsKey(k)) {
-                        markovChains.put(k, markovChains.get(k));
-                    } else if (markovChains.containsKey(i)) {
-                        markovChains.put(k, markovChains.get(j));
-                    } else {
-                        markovChains.put(j, counter);
-                        markovChains.put(k, counter);
-                        counter++;
-                    }
-                }
+					if (markovChains.containsKey(k)) {
+						markovChains.put(k, markovChains.get(k));
+					} else if (markovChains.containsKey(i)) {
+						markovChains.put(k, markovChains.get(j));
+					} else {
+						markovChains.put(j, counter);
+						markovChains.put(k, counter);
+						counter++;
+					}
+				}
 			}
 			if (!markovChains.containsKey(i)) {
-                markovChains.put(i, counter);
-                counter++;
-            }
+				markovChains.put(i, counter);
+				counter++;
+			}
 			generatorMatrix.setEntry(j, j, -sumOfElementsInTheRow);
 		}
 		return generatorMatrix;
 	}
-	
-	public static HashMap<Integer, Integer> getMarkovChains(){
+
+	public static HashMap<Integer, Integer> getMarkovChains() {
 		return markovChains;
 	}
 
-	public static RealMatrix calculateTimeSeries(
-			Map<Integer, Double> probabilities, RealMatrix generatorMatrix,
+	public static RealMatrix calculateTimeSeries(Map<Integer, Double> probabilities, RealMatrix generatorMatrix,
 			double time, double timeInterval) {
 		SortedSet<Integer> keys = new TreeSet<Integer>(probabilities.keySet());
 		List<Double> sortedProbabilities = new ArrayList<>();
@@ -111,32 +108,26 @@ public class SeriesComputationUtils {
 		}
 
 		int numberOfTrackedEntries = (int) (time / timeInterval);
-		RealMatrix matrixToMultiply = MatrixUtils.createRealMatrix(
-				MAX_NUMBER_OF_ITERATIONS, matrixSize);
-		RealMatrix chainProbMatrix = MatrixUtils.createRealMatrix(
-				numberOfTrackedEntries + 1, matrixSize);
-		RealVector startingDistribution = MatrixUtils
-				.createRealVector(sortedDoubleProbabilities);
+		RealMatrix matrixToMultiply = MatrixUtils.createRealMatrix(MAX_NUMBER_OF_ITERATIONS, matrixSize);
+		RealMatrix chainProbMatrix = MatrixUtils.createRealMatrix(numberOfTrackedEntries + 1, matrixSize);
+		RealVector startingDistribution = MatrixUtils.createRealVector(sortedDoubleProbabilities);
 		RealMatrix iMatrix = MatrixUtils.createRealIdentityMatrix(matrixSize);
 
 		double gammaValue = computeGamma(generatorMatrix);
-		RealMatrix transMatrix = iMatrix.add(generatorMatrix
-				.scalarMultiply(1 / gammaValue));
+		RealMatrix transMatrix = iMatrix.add(generatorMatrix.scalarMultiply(1 / gammaValue));
 		chainProbMatrix.setRowVector(0, startingDistribution);
 
 		for (int i = 0; i < MAX_NUMBER_OF_ITERATIONS; i++) {
-			matrixToMultiply.setRowVector(i,
-					transMatrix.power(i).preMultiply(startingDistribution));
+			matrixToMultiply.setRowVector(i, transMatrix.power(i).preMultiply(startingDistribution));
 		}
 
-		computeDistributionInTime(chainProbMatrix, gammaValue, time,
-				matrixToMultiply, timeInterval);
+		computeDistributionInTime(chainProbMatrix, gammaValue, time, matrixToMultiply, timeInterval);
 		System.out.println(chainProbMatrix.toString());
 		return chainProbMatrix;
 	}
 
-	public static RealVector calculateProbabilitiesOfTopEvent(BDD bddTree,
-			RealMatrix seriesMatrix, HashMap<Integer, Integer> markovChains) {
+	public static RealVector calculateProbabilitiesOfTopEvent(BDD bddTree, RealMatrix seriesMatrix,
+			HashMap<Integer, Integer> markovChains) {
 		List<?> list = (List<?>) bddTree.allsat();
 		int matrixSize = seriesMatrix.getRowDimension();
 		double[] probabilities = new double[matrixSize];
@@ -146,6 +137,7 @@ public class SeriesComputationUtils {
 			double[] currentProb = new double[matrixSize];
 			Arrays.fill(currentProb, 1.0);
 			solutions = (byte[]) item;
+
 			if (checkSolution(markovChains, solutions)){
 				for (int i = 0; i < solutions.length; i++) {
 					if (solutions[i] == 1) {
@@ -166,8 +158,7 @@ public class SeriesComputationUtils {
 				}
 			}
 		}
-		RealVector topEventProbabilities = MatrixUtils
-				.createRealVector(probabilities);
+		RealVector topEventProbabilities = MatrixUtils.createRealVector(probabilities);
 		return topEventProbabilities;
 	}
 	
@@ -188,4 +179,5 @@ public class SeriesComputationUtils {
         }
         return true;
     }
+
 }

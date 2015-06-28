@@ -18,7 +18,6 @@ public class FaultTreeToBdd {
 	private static final int FALSE_SAT_VALUE = 0;
 	private static final int TRUE_SAT_VALUE = 1;
 	private Map<Integer, Double> probabilities = new HashMap<>();
-	private static final int VAR_NUMBER = 6;
 	private static final int CACHE_SIZE = 1000;
 	private static final int NODE_NUMBER = 1000;
 
@@ -26,43 +25,37 @@ public class FaultTreeToBdd {
 	private BDDFactory bddFactory;
 	private HashMap<Integer, BDD> bddMap = new HashMap<Integer, BDD>();
 
-	public BDD faultTreeToBDD(GateNode faultTree) {
+	public BDD faultTreeToBDD(GateNode faultTree, List<BasicNode> basicNodesFromMarkovChains) {
 		bddFactory = BDDFactory.init(NODE_NUMBER, CACHE_SIZE);
-		bddFactory.setVarNum(VAR_NUMBER);
+		bddFactory.setVarNum(basicNodesFromMarkovChains.size());
+		for (BasicNode basicNode : basicNodesFromMarkovChains) {
+			if (!getIdMap().contains(basicNode.getId() - 1)) {
+				addToIdMap(basicNode.getId() - 1);
+			}
+			addProbabilityOfBasicNode(basicNode.getId() - 1, basicNode.getProbability());
+		}
 		BDD bdd = buildBdd(faultTree);
-		
-		return bdd;
 
+		return bdd;
 	}
 
 	private BDD buildBdd(EventNode node) {
 		BDD bdd = null;
-		Integer nodeId = new Integer(node.getId() -1);
-		if (node instanceof BasicNode) {
-			probabilities.put(nodeId, node.getProbability());
-			if (!idMap.contains(nodeId)) {
-				idMap.add(nodeId);
-			}
-		}
+		Integer nodeId = new Integer(node.getId() - 1);
 		if (bddMap.containsKey(nodeId)) {
-			System.out.println("from map "+nodeId);
 			bdd = bddMap.get(nodeId);
 		} else if (node instanceof BasicNode) {
-			bdd = bddFactory.ithVar(node.getId()-1);
+			bdd = bddFactory.ithVar(node.getId() - 1);
 			bddMap.put(nodeId, bdd);
-			System.out.println("bddMap "+ bddMap.keySet());
 		} else if (node instanceof GateNode) {
 			GateNode gate = (GateNode) node;
 			for (EventNode enode : gate.getChildEvents()) {
 				if (bdd == null) {
 					bdd = buildBdd(enode);
-					System.out.println(enode.getId());
 				} else {
 					if (OperationEnum.isAND(gate.getOperation())) {
-						System.out.println("AND"+enode.getId());
 						bdd = bdd.and(buildBdd(enode));
 					} else {
-						System.out.println("OR"+enode.getId());
 						bdd = bdd.or(buildBdd(enode));
 					}
 				}
@@ -80,7 +73,6 @@ public class FaultTreeToBdd {
 			double current = 1.0;
 			solutions = (byte[]) item;
 			for (int i = 0; i < solutions.length; i++) {
-				System.out.println("i0= "+i);
 				if (solutions[i] == TRUE_SAT_VALUE) {
 					current *= probabilities.get(i);
 				} else if (solutions[i] == FALSE_SAT_VALUE) {
@@ -100,21 +92,22 @@ public class FaultTreeToBdd {
 		return this.idMap;
 	}
 
-	public void addToIdMap(int stateId){
+	public void addToIdMap(int stateId) {
 		Integer id = new Integer(stateId);
-		this.idMap.add(id);		
+		this.idMap.add(id);
 	}
-	
-	public void addProbabilityOfBasicNode(int nodeId, double probability){
+
+	public void addProbabilityOfBasicNode(int nodeId, double probability) {
 		Integer id = new Integer(nodeId);
-		if (this.idMap.contains(id)){
+		if (this.idMap.contains(id)) {
 			this.probabilities.put(id, new Double(probability));
 		}
 	}
-	
-	public BDDFactory getBDDFactory(){
+
+	public BDDFactory getBDDFactory() {
 		return this.bddFactory;
 	}
+
 	public Map<Integer, Double> getProbabilitiesForBasicEvents() {
 		Map<Integer, Double> result = new HashMap<>();
 		for (Entry<Integer, Double> entry : probabilities.entrySet()) {
