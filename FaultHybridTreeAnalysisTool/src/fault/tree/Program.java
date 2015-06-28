@@ -15,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.xml.sax.SAXException;
 
+import fault.tree.filestreamer.FileStreamer;
 import fault.tree.model.xml.GateNode;
 import fault.tree.model.xml.parser.FaultTreeXMLParser;
 import fault.tree.visualizer.Visualizer;
@@ -30,6 +31,7 @@ public class Program {
 			faultTree = new FaultTreeXMLParser().readFaultTree(faultTreeInput.getAbsolutePath());
 			System.out.println("Tree is built.");
 			BDD bdd = ftToBDD.faultTreeToBDD(faultTree);
+			bdd.printDot();
 			System.out.println("BDD is built");
 			double probability = ftToBDD.getFailure(bdd);
 			System.out.println("Probability = " + probability);
@@ -43,6 +45,7 @@ public class Program {
 					ftToBDD.getProbabilitiesForBasicEvents(), generatorMatrix, ConnectionXMLParser.TIME, ConnectionXMLParser.TIME_INTERVAL);
 			System.out.println("Calculated the series for the initial time");
 			Visualizer.paint(seriesMatrix);
+			FileStreamer.ouput(seriesMatrix);
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

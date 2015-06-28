@@ -1,7 +1,9 @@
 package fault.tree.visualizer;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -12,6 +14,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 
 public class VisualizerFrame extends JFrame {
 
+	private static final int DEFAULT_LINE_WIDTH = 2;
 	private static final int AXIS_OFFSET = 50;
 	private static final long serialVersionUID = 1L;
 	private final RealMatrix seriesMatrix;
@@ -65,6 +68,8 @@ public class VisualizerFrame extends JFrame {
 				xPoints[j] = j * timeStep + AXIS_OFFSET;
 				yPoints[j] = (int) (AXIS_OFFSET + (getHeight() - 2 * AXIS_OFFSET) * (1 - seriesMatrix.getEntry(j, i)));
 			}
+			Graphics2D g2 = (Graphics2D) g;
+			g2.setStroke(new BasicStroke(DEFAULT_LINE_WIDTH));
 			g.drawPolyline(xPoints, yPoints, numberOfTimeStamps);
 			String label = "State " + (i + 1);
 			g.drawString(label, getWidth() - AXIS_OFFSET - g.getFontMetrics().stringWidth(label),
@@ -83,8 +88,6 @@ public class VisualizerFrame extends JFrame {
 			for (int G = lowerLimit; G < upperLimit; G += colorStep) {
 				for (int B = lowerLimit; B < upperLimit; B += colorStep) {
 					if (colors.size() >= amount) {
-						// The calculated step is not very precise, so this
-						// safeguard is appropriate
 						return colors;
 					} else {
 						int color = (R << 16) + (G << 8) + (B);
