@@ -37,6 +37,20 @@ public class ConnectionXMLParser {
 	private Document document;
 	private Element documentElement;
 
+	/**
+	 * An xml parser constructor which initializes the TIME_INTERVAL and TIME
+	 * fields with the values at the top element in the file and does the
+	 * parsing preparation.
+	 * 
+	 * @param filePath
+	 *            the path of the xml file with the connections to be parsed
+	 * @throws ParserConfigurationException
+	 *             if the error occurs with the xml structure parsing
+	 * @throws SAXException
+	 *             when the sax parser throws its own exception
+	 * @throws IOException
+	 *             if the error occurs with the file or stream state
+	 */
 	public ConnectionXMLParser(String filePath) throws ParserConfigurationException, SAXException, IOException {
 		this.connections = new ArrayList<>();
 		this.factory = DocumentBuilderFactory.newInstance();
@@ -48,6 +62,11 @@ public class ConnectionXMLParser {
 		TIME = Double.valueOf(documentElement.getAttribute(MISSION_TIME_ATTRIBUTE_NAME));
 	}
 
+	/**
+	 * Fetches the list of all the basic events from the connections file
+	 * 
+	 * @return the list of all the basic events from the connections file
+	 */
 	public List<BasicNode> getBasicNodes() {
 		List<BasicNode> basicNodes = new ArrayList<>();
 		NodeList states = document.getElementsByTagName(STATE_NODE_NAME);
@@ -67,6 +86,12 @@ public class ConnectionXMLParser {
 		return basicNodes;
 	}
 
+	/**
+	 * Parses the connections described in the xml file and returns the list of
+	 * them
+	 * 
+	 * @return the list of connections described in the xml file
+	 */
 	public List<Connection> parse() {
 		NodeList nodes = document.getElementsByTagName(CONNECTION_NODE_NAME);
 		for (int i = 0; i < nodes.getLength(); i++) {

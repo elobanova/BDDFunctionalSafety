@@ -25,11 +25,21 @@ public class FaultTreeToBdd {
 	private BDDFactory bddFactory;
 	private HashMap<Integer, BDD> bddMap = new HashMap<Integer, BDD>();
 
+	/**
+	 * Builds the BDD diagram from the fault tree, which root is passed as a
+	 * parameter.
+	 * 
+	 * @param faultTree
+	 *            the root of the fault tree from which BDD will be constructed
+	 * @param basicNodesFromMarkovChains
+	 *            a list of basic events
+	 * @return the generated BDD
+	 */
 	public BDD faultTreeToBDD(GateNode faultTree, List<BasicNode> basicNodesFromMarkovChains) {
 		bddFactory = BDDFactory.init(NODE_NUMBER, CACHE_SIZE);
 		bddFactory.setVarNum(basicNodesFromMarkovChains.size());
 		for (BasicNode basicNode : basicNodesFromMarkovChains) {
-			if (!getIdMap().contains(basicNode.getId() - 1)) {
+			if (!this.idMap.contains(basicNode.getId() - 1)) {
 				addToIdMap(basicNode.getId() - 1);
 			}
 			addProbabilityOfBasicNode(basicNode.getId() - 1, basicNode.getProbability());
@@ -65,6 +75,13 @@ public class FaultTreeToBdd {
 		return bdd;
 	}
 
+	/**
+	 * Computes the failure probability of the top event in the BDD
+	 * 
+	 * @param bddTree
+	 *            a BDD tree
+	 * @return the failure probability of the top event
+	 */
 	public double getFailure(BDD bddTree) {
 		List<?> list = (List<?>) bddTree.allsat();
 		double failureProbability = 0;
@@ -84,30 +101,32 @@ public class FaultTreeToBdd {
 		return failureProbability;
 	}
 
+	/**
+	 * Returns the generator matrix size
+	 * 
+	 * @return the generator matrix size
+	 */
 	public int getGeneratorMatrixSize() {
 		return idMap.size();
 	}
 
-	public Set<Integer> getIdMap() {
-		return this.idMap;
-	}
-
-	public void addToIdMap(int stateId) {
+	private void addToIdMap(int stateId) {
 		Integer id = new Integer(stateId);
 		this.idMap.add(id);
 	}
 
-	public void addProbabilityOfBasicNode(int nodeId, double probability) {
+	private void addProbabilityOfBasicNode(int nodeId, double probability) {
 		Integer id = new Integer(nodeId);
 		if (this.idMap.contains(id)) {
 			this.probabilities.put(id, new Double(probability));
 		}
 	}
 
-	public BDDFactory getBDDFactory() {
-		return this.bddFactory;
-	}
-
+	/**
+	 * Returns the described probabilities of the events in the markov chains
+	 * 
+	 * @return a map of event id to its probability
+	 */
 	public Map<Integer, Double> getProbabilitiesForBasicEvents() {
 		Map<Integer, Double> result = new HashMap<>();
 		for (Entry<Integer, Double> entry : probabilities.entrySet()) {
