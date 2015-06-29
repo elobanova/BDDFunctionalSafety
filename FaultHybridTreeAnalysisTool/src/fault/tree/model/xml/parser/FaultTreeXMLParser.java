@@ -22,7 +22,6 @@ import fault.tree.model.xml.GateNode;
 import fault.tree.model.xml.OperationEnum;
 
 public class FaultTreeXMLParser {
-	// private static final String PROBABILITY_ATTRIBUTE_NAME = "probability";
 	private static final String NAME_ATTRIBUTE_NAME = "name";
 	private static final String OPERATION_ATTRIBUTE_NAME = "operation";
 	private static final String LEVEL_ATTRIBUTE_NAME = "level";
@@ -31,6 +30,23 @@ public class FaultTreeXMLParser {
 	private static final String GATE_NODE_NAME = "gate";
 	private static final String BASIC_NODE_NAME = "basic";
 
+	/**
+	 * A parsing method which reads the fault tree from the external xml file.
+	 * It builds the tree with the top gate event as a root. The user can
+	 * traverse the tree further on since all its leaves are also present.
+	 * 
+	 * @param filePath
+	 *            the path of the file containing the tree represented as an xml
+	 *            structure.
+	 * @return top gate event as a root of the fault tree.
+	 * 
+	 * @throws ParserConfigurationException
+	 *             if the error occurs with the xml structure parsing
+	 * @throws SAXException
+	 *             when the sax parser throws its own exception
+	 * @throws IOException
+	 *             if the error occurs with the file or stream state
+	 */
 	public GateNode readFaultTree(String filePath) throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
@@ -88,8 +104,7 @@ public class FaultTreeXMLParser {
 			faultTreeBasicEvent.setId(Integer.valueOf(basicElement.getAttribute(ID_ATTRIBUTE_NAME)));
 			faultTreeBasicEvent.setLevel(Integer.valueOf(basicElement.getAttribute(LEVEL_ATTRIBUTE_NAME)));
 			faultTreeBasicEvent.setName(basicElement.getAttribute(NAME_ATTRIBUTE_NAME));
-			// faultTreeBasicEvent.setProbability(Double.valueOf(basicElement
-			// .getAttribute(PROBABILITY_ATTRIBUTE_NAME)));
+
 			return faultTreeBasicEvent;
 		}
 
@@ -108,13 +123,7 @@ public class FaultTreeXMLParser {
 		return null;
 	}
 
-	/**
-	 * Recursively builds the tree with the top gate as a root
-	 * 
-	 * @param events
-	 * @return
-	 */
-	public GateNode match(List<GateNode> events) {
+	private GateNode match(List<GateNode> events) {
 		List<GateNode> matchedEvents = new ArrayList<>(events);
 		GateNode root = matchedEvents.get(0);
 		replace(root, matchedEvents);

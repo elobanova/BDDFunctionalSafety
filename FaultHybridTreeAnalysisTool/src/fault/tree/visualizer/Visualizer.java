@@ -11,6 +11,17 @@ public class Visualizer {
 
 	private static final String FRAME_TITLE = "Probability values of MC states";
 
+	/**
+	 * A painting method which shows the JFrame instance to display the
+	 * probabilities of the markov chains members and the top event
+	 * 
+	 * @param seriesMatrix
+	 *            a matrix containing the probabilities of the markov chains
+	 *            members and the top event over time
+	 * 
+	 * @param topGateId
+	 *            an id of the top event
+	 */
 	public static void paint(RealMatrix seriesMatrix, int topGateId) {
 		VisualizerFrame frame = new VisualizerFrame(FRAME_TITLE, seriesMatrix, topGateId);
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();

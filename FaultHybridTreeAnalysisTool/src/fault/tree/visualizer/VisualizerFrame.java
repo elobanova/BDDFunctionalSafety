@@ -22,6 +22,18 @@ public class VisualizerFrame extends JFrame {
 	private final RealMatrix seriesMatrix;
 	private final int topGateId;
 
+	/**
+	 * Constructor of the JFrame implementation to draw the time series of the
+	 * markov chains members and the top event.
+	 * 
+	 * @param frameTitle
+	 *            a title of the top bar for the JPanel
+	 * @param seriesMatrix
+	 *            a matrix containing the probabilities of the markov chains
+	 *            members and the top event over time
+	 * @param topGateId
+	 *            an id of the top event
+	 */
 	public VisualizerFrame(String frameTitle, RealMatrix seriesMatrix, int topGateId) {
 		super(frameTitle);
 		this.seriesMatrix = seriesMatrix;

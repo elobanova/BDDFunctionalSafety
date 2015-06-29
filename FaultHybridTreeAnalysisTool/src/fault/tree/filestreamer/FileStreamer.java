@@ -13,7 +13,7 @@ import org.apache.commons.math3.linear.RealMatrix;
 
 public class FileStreamer {
 
-	public static void saveProgramAsCSV(String filename, List<String> fileLines) {
+	private static void saveStringlinesIntoCSV(String filename, List<String> fileLines) {
 		File file = new File(filename);
 		try {
 			BufferedWriter output = new BufferedWriter(new FileWriter(file));
@@ -32,9 +32,20 @@ public class FileStreamer {
 		}
 	}
 
+	/**
+	 * Output method to print the values for the probabilities of the markov
+	 * chains members and the top event into an external file series.csv, which
+	 * will be created and stored in the project directory.
+	 * 
+	 * @param seriesMatrix
+	 *            a matrix containing the probabilities of the markov chains
+	 *            members and the top event over time
+	 * @param topGateId
+	 *            an id of the top event
+	 */
 	public static void ouput(RealMatrix seriesMatrix, int topEventId) {
 		List<String> fileLines = generateLinesOfOutputFile(seriesMatrix, topEventId);
-		saveProgramAsCSV("series.csv", fileLines);
+		saveStringlinesIntoCSV("series.csv", fileLines);
 	}
 
 	private static List<String> generateLinesOfOutputFile(RealMatrix seriesMatrix, int topEventId) {
