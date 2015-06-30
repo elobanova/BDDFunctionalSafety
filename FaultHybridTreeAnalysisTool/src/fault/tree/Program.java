@@ -27,7 +27,7 @@ import faultTreeToBdd.FaultTreeToBdd;
 
 public class Program {
 	public static void main(String[] args) {
-		File faultTreeInput = FileUtils.toFile(Program.class.getResource("resources/gate14.xml"));
+		File faultTreeInput = FileUtils.toFile(Program.class.getResource("resources/gate15.xml"));
 		File connectionsOfMarkovChainsInput = FileUtils.toFile(Program.class.getResource("resources/markovchains.xml"));
 		FaultTreeToBdd ftToBDD = new FaultTreeToBdd();
 		GateNode faultTree;
@@ -52,7 +52,7 @@ public class Program {
 					ftToBDD.getProbabilitiesForBasicEvents(), generatorMatrix, ConnectionXMLParser.TIME,
 					ConnectionXMLParser.TIME_INTERVAL);
 			System.out.println("Calculated the series for the initial time");
-
+					
 			RealVector probabilitiesOfTopEvent = SeriesComputationUtils.calculateProbabilitiesOfTopEvent(bdd,
 					seriesMatrix, markovChains);
 			System.out.println("Calculated the series for the top event");

@@ -21,6 +21,11 @@ public class SeriesComputationUtils {
 	private static final int MAX_NUMBER_OF_ITERATIONS = 21;
 	private static HashMap<Integer, Integer> markovChains = new HashMap<>();
 
+	/**
+	 * Computes the uniform rate parameter
+	 * @param generatorMatrix the generator matrix of the states
+	 * @return the uniform rate parameter
+	 */
 	private static double computeGamma(RealMatrix generatorMatrix) {
 		double gammaValue = 0.0;
 		double maximalValue = 0.0;
@@ -33,6 +38,14 @@ public class SeriesComputationUtils {
 		return gammaValue;
 	}
 
+	/**
+	 * Computes distribution for every point of time
+	 * @param chainProbMatrix the matrix with probabilities
+	 * @param gammaValue the uniform rate parameter
+	 * @param time the complete mission time
+	 * @param matrixToMultiply the probability transition matrix at the power of MAX_NUMBER_OF_ITERATIONS
+	 * @param timeInterval the sampling interval
+	 */
 	private static void computeDistributionInTime(RealMatrix chainProbMatrix, double gammaValue, double time,
 			RealMatrix matrixToMultiply, double timeInterval) {
 		int pos = 1;
@@ -47,9 +60,15 @@ public class SeriesComputationUtils {
 			pos++;
 		}
 	}
-
-	public static RealMatrix buildGeneratorMatrix(List<Connection> chains, int i) {
-		RealMatrix generatorMatrix = MatrixUtils.createRealMatrix(i, i);
+	
+	/**
+	 * Builts generator matrix
+	 * @param chains list of markov chains
+	 * @param size the size of generator matrix
+	 * @return the generator matrix
+	 */
+	public static RealMatrix buildGeneratorMatrix(List<Connection> chains, int size) {
+		RealMatrix generatorMatrix = MatrixUtils.createRealMatrix(size, size);
 		for (Connection conn : chains) {
 			generatorMatrix.setEntry(conn.getIdTo() - 1, conn.getIdFrom() - 1, conn.getProbability());
 		}
@@ -63,7 +82,7 @@ public class SeriesComputationUtils {
 				if (generatorMatrix.getEntry(j, k) != 0) {
 					if (markovChains.containsKey(k)) {
 						markovChains.put(k, markovChains.get(k));
-					} else if (markovChains.containsKey(i)) {
+					} else if (markovChains.containsKey(size)) {
 						markovChains.put(k, markovChains.get(j));
 					} else {
 						markovChains.put(j, counter);
@@ -72,8 +91,8 @@ public class SeriesComputationUtils {
 					}
 				}
 			}
-			if (!markovChains.containsKey(i)) {
-				markovChains.put(i, counter);
+			if (!markovChains.containsKey(size)) {
+				markovChains.put(size, counter);
 				counter++;
 			}
 			generatorMatrix.setEntry(j, j, -sumOfElementsInTheRow);
@@ -84,7 +103,16 @@ public class SeriesComputationUtils {
 	public static HashMap<Integer, Integer> getMarkovChains() {
 		return markovChains;
 	}
-
+	
+	/**
+	 * Calculates time series for continous markov chains by using uniformization
+	 * @param probabilities the map with initial probabilities of states
+	 * @param generatorMatrix the generator matrix of states  
+	 * @param time the complete mission time
+	 * @param timeInterval the sampling interval
+	 * @return the time series matrix as RealMatrix, 
+	 * where the row are the probabilities at time t and a column is a state
+	 */
 	public static RealMatrix calculateTimeSeries(Map<Integer, Double> probabilities, RealMatrix generatorMatrix,
 			double time, double timeInterval) {
 		SortedSet<Integer> keys = new TreeSet<Integer>(probabilities.keySet());
@@ -121,7 +149,18 @@ public class SeriesComputationUtils {
 		computeDistributionInTime(chainProbMatrix, gammaValue, time, matrixToMultiply, timeInterval);
 		return chainProbMatrix;
 	}
-
+	
+	/**
+	 * Calculates probabilities of the top event over time. It iterates over every solution which is 
+	 * obtained from allsat() method. Every solution is an array with values for states of markov chains.
+	 * In one markov chain can be exactly one state with value 1, otherwise the probability of this path is 0.
+	 * If a variable has value 1, it gets multiplied with the temp probability. 
+	 * If a variable has value 0, (1 - the probability) gets multiplied.  
+	 * @param bddTree BDD tree
+	 * @param seriesMatrix time series matrix, a column is a state 
+	 * @param markovChains the map of states and corresponding markov chains
+	 * @return vector of probabilities for the top event as a RealVector
+	 */
 	public static RealVector calculateProbabilitiesOfTopEvent(BDD bddTree, RealMatrix seriesMatrix,
 			HashMap<Integer, Integer> markovChains) {
 		List<?> list = (List<?>) bddTree.allsat();
@@ -159,7 +198,12 @@ public class SeriesComputationUtils {
 		return topEventProbabilities;
 	}
 
-	// check that in one MC only one state could have value 1
+	/**
+	 * Checks that the solution is correct. In one markov chain exactly one state should have value 1
+	 * @param markovChains the map of states and corresponding markov chains
+	 * @param solution an array of variables assignment
+	 * @return true if solution is correct, false otherwise
+	 */
 	private static boolean checkSolution(HashMap<Integer, Integer> markovChains, byte[] solution) {
 		int valueA;
 		int valueB;
@@ -167,10 +211,17 @@ public class SeriesComputationUtils {
 			valueA = solution[state];
 			for (int n = state; n < solution.length; n++) {
 				valueB = solution[n];
+				int counter = 0;
 				if (markovChains.get(state) == markovChains.get(n)) {
 					if (state != n && valueA == 1 && valueB == 1) {
 						return false;
+					} else if (state != n && valueA == 0 && valueB == 0){
+						counter++;
 					}
+				}
+				if (Collections.frequency(markovChains.values(), markovChains.get(state))-1 == counter &&
+						valueA == 0 && counter != 0){
+					return false;
 				}
 			}
 		}
